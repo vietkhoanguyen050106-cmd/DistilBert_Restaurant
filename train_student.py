@@ -98,6 +98,10 @@ def main():
     student.load_state_dict(best_state)
     student.save_pretrained(a.out)
     tok.save_pretrained(a.out)
+    with open(f"{a.out}/train_stats.json", "w") as f:
+        json.dump({"epochs": a.epochs,
+                   "sec_per_epoch": sum(epoch_times) / len(epoch_times),
+                   "total_train_sec": sum(epoch_times)}, f, indent=2)
     print(f"\n=== STUDENT TEST ({'KD+hidden' if use_kd else 'baseline'}) ===")
     acc, f1 = evaluate(student, test_dl, False, label_names, report=True)
     print(f"test_acc={acc:.4f} test_macro_f1={f1:.4f}")

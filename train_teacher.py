@@ -35,6 +35,7 @@ def main():
 
     best_f1 = -1.0
     for ep in range(a.epochs):
+        ep_start = time.time() 
         model.train()
         running = 0.0
         for b in train_dl:
@@ -48,6 +49,9 @@ def main():
             scaler.update()
             sch.step()
             running += out.loss.item()
+        if USE_AMP:                     
+            torch.cuda.synchronize()
+        epoch_times.append(time.time() - ep_start)
         acc, f1 = evaluate(model, val_dl, True)
         print(f"[Teacher] ep {ep+1}/{a.epochs} loss={running/len(train_dl):.4f} val_acc={acc:.4f} val_f1={f1:.4f}")
         if f1 > best_f1:
